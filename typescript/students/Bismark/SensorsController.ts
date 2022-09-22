@@ -32,10 +32,10 @@ export default class YourSensorsController extends SensorsController {
     const scanResult = passiveScan();
     if (!(scanResult instanceof Error)) this.target = scanResult[0];
 
-    if (this.counter % 50 === 0) {
+    if (this.counter % 10 === 0) {
       const activeScanResult = activeScan(
-        this.navigation.angle - Math.PI / (this.counter % 100 === 0 ? 4 : 16),
-        Math.PI / (this.counter % 100 === 0 ? 2 : 8),
+        this.navigation.angle - Math.PI / 4,
+        Math.PI / 2,
         500
       );
 

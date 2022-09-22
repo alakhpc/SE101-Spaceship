@@ -31,6 +31,25 @@ export default class YourPropulsionController extends PropulsionController {
       setThruster("counterClockwise", this.navigation.angVel * 15_000);
       setThruster("clockwise", this.navigation.angVel);
     }
-    setThruster("main", Math.abs(headingDiff) < 0.2 ? 30 : 0);
+
+    if (
+      this.sensors.targetDetails &&
+      ((this.sensors.targetDetails.distance < 200 &&
+        this.navigation.speed > 0.25) ||
+        (this.sensors.targetDetails.distance < 100 &&
+          this.navigation.speed > 0.125))
+    ) {
+      setThruster("main", 0);
+      setThruster("bow", 100);
+    } else {
+      setThruster("bow", 0);
+      setThruster(
+        "main",
+        Math.abs(headingDiff) < 0.2 &&
+          (this.navigation.speed < 1 || headingDiff > 0.001)
+          ? 30
+          : 0
+      );
+    }
   }
 }
