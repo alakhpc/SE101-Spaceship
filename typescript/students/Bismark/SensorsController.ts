@@ -12,6 +12,7 @@ export default class YourSensorsController extends SensorsController {
   propulsion: YourPropulsionController;
 
   target: PassiveReading | undefined;
+  targetDetails: EMSReading | undefined;
 
   activeScan: EMSReading[] = [];
 
@@ -31,15 +32,21 @@ export default class YourSensorsController extends SensorsController {
     const scanResult = passiveScan();
     if (!(scanResult instanceof Error)) this.target = scanResult[0];
 
-    if (this.counter % 10 === 0) {
+    if (this.counter % 50 === 0) {
       const activeScanResult = activeScan(
-        this.navigation.angle - Math.PI / 32,
-        Math.PI / 16,
-        600
+        this.navigation.angle - Math.PI / (this.counter % 100 === 0 ? 4 : 16),
+        Math.PI / (this.counter % 100 === 0 ? 2 : 8),
+        500
       );
 
       if (!(activeScanResult instanceof Error)) {
-        this.activeScan = activeScanResult;
+        this.targetDetails = activeScanResult.find(
+          (r) => Math.abs(r.angle - (this.target?.heading ?? 0)) <= 0.01
+        );
+
+        this.activeScan = activeScanResult.sort(
+          (r1, r2) => r1.distance - r2.distance
+        );
       }
     }
 
